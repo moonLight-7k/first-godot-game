@@ -1,7 +1,7 @@
-[gd_scene format=3 uid="uid://b14c5hs0sr5be"]
+[gd_scene load_steps=10 format=3 uid="uid://b14c5hs0sr5be"]
 
 [ext_resource type="Texture2D" uid="uid://3sen17nrg0qy" path="res://assets/sprites/slime_green.png" id="1_p2gj0"]
-[ext_resource type="PackedScene" uid="uid://cf043gxy2xtfm" path="res://scenes/kill_zone.tscn" id="2_n6pvg"]
+[ext_resource type="Script" path="res://scripts/slime.gd" id="2_script"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pjw23"]
 atlas = ExtResource("1_p2gj0")
@@ -39,19 +39,61 @@ animations = [{
 "speed": 8.0
 }]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_0l8pv"]
-size = Vector2(10, 12)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(16, 14)
 
-[node name="Slime" type="Node2D" unique_id=555620920]
+[sub_resource type="CircleShape2D" id="CircleShape2D_detection"]
+radius = 150.0
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=475405577]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurt"]
+size = Vector2(14, 12)
+
+[node name="Slime" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("2_script")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_v5wyi")
 autoplay = "default"
-frame = 3
-frame_progress = 0.7494671
 
-[node name="KillZone" parent="." unique_id=1090755065 instance=ExtResource("2_n6pvg")]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 5)
+shape = SubResource("RectangleShape2D_body")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="KillZone" unique_id=32647802]
+[node name="RayCastRight" type="RayCast2D" parent="."]
+target_position = Vector2(10, 0)
+enabled = true
+collision_mask = 1
+
+[node name="RayCastLeft" type="RayCast2D" parent="."]
+target_position = Vector2(-10, 0)
+enabled = true
+collision_mask = 1
+
+[node name="RayCastDownRight" type="RayCast2D" parent="."]
+target_position = Vector2(5, 10)
+enabled = true
+collision_mask = 1
+
+[node name="RayCastDownLeft" type="RayCast2D" parent="."]
+target_position = Vector2(-5, 10)
+enabled = true
+collision_mask = 1
+
+[node name="DetectionArea" type="Area2D" parent="."]
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+shape = SubResource("CircleShape2D_detection")
+
+[node name="HurtBox" type="Area2D" parent="."]
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
 position = Vector2(0, 6)
-shape = SubResource("RectangleShape2D_0l8pv")
+shape = SubResource("RectangleShape2D_hurt")
+
+[connection signal="body_entered" from="DetectionArea" to="." method="_on_player_detected"]
+[connection signal="body_exited" from="DetectionArea" to="." method="_on_player_lost"]
+[connection signal="body_entered" from="HurtBox" to="." method="_on_hurt_box_body_entered"]
