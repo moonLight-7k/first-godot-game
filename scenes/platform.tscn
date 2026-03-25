@@ -5,6 +5,16 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nlgqw"]
 size = Vector2(32, 9)
 
+[sub_resource type="Animation" id="Animation_ba0x2"]
+resource_name = "move"
+length = 2.0333333
+loop_mode = 2
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_nlgqw"]
+_data = {
+&"move": SubResource("Animation_ba0x2")
+}
+
 [node name="Platform" type="AnimatableBody2D" unique_id=1932697539]
 sync_to_physics = false
 
@@ -17,3 +27,6 @@ region_rect = Rect2(15.365319, -0.28530312, 32.86531, 10.14118)
 position = Vector2(0, -0.5)
 shape = SubResource("RectangleShape2D_nlgqw")
 one_way_collision = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1690611986]
+libraries/ = SubResource("AnimationLibrary_nlgqw")
